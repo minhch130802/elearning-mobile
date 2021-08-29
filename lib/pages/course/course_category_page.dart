@@ -13,7 +13,7 @@ class CourseCategoryPage extends StatefulWidget {
 }
 
 class _CourseCategoryPageState extends State<CourseCategoryPage> {
-  CourseAPI _courseCategoryAPI = new CourseAPI();
+  CourseRestAPI _courseCategoryAPI = new CourseRestAPI();
   List<CourseCategory> _courseCategory = [];
   List<CourseCategory> _categoryList = [];
   List<int> _clickHistory = [];
@@ -33,9 +33,7 @@ class _CourseCategoryPageState extends State<CourseCategoryPage> {
     _courseCategoryAPI.getCourseCategory().then((value) {
       if (value != []) {
         for(int i = 1; i < value.length; i++) {
-          if(value[i].visible == 1) {
-            _categoryList.add(value[i]);
-          }
+          _categoryList.add(value[i]);
         }
         _categoryList.sort((a,b) => a.sortOrder!.compareTo(b.sortOrder!));
       }
@@ -44,11 +42,19 @@ class _CourseCategoryPageState extends State<CourseCategoryPage> {
     });
   }
 
+  @override
+  void dispose() {
+    _clickHistory.clear();
+    _categoryList.clear();
+    _courseCategory.clear();
+    super.dispose();
+  }
+
   void _getCourseCategoryByParent(int parent, String name) {
     List<CourseCategory> temp = [];
 
     for (int i = 0; i < _categoryList.length; i++) {
-      if (_categoryList[i].parent == parent && _categoryList[i].visible == 1) {
+      if (_categoryList[i].parent == parent) {
         temp.add(_categoryList[i]);
       }
     }
@@ -59,13 +65,20 @@ class _CourseCategoryPageState extends State<CourseCategoryPage> {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>
               CoursePage(categoryId: parent, categoryName: name)));
-      return;
+    } else {
+      if(_clickHistory.length > 0) {
+        if(_clickHistory[_clickHistory.length - 1] != parent){
+          _clickHistory.add(parent);
+        }
+      } else {
+        _clickHistory.add(parent);
+      }
+
+      _courseCategory.clear();
+      _courseCategory.addAll(temp);
+      _courseCategory.add(CourseCategory(name: ""));
     }
 
-    _clickHistory.add(parent);
-    _courseCategory.clear();
-    _courseCategory.addAll(temp);
-    _courseCategory.add(CourseCategory(name: ""));
 
     setState(() {
       _isLoading = false;
@@ -75,117 +88,92 @@ class _CourseCategoryPageState extends State<CourseCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Course categories",
-          style: TextStyle(color: Colors.black, fontSize: 16),
+    Future<bool> _onWillPop() async {
+      _clickHistory.removeLast();
+
+      if(_clickHistory.length == 0) {
+        return true;
+      } else {
+        _getCourseCategoryByParent(_clickHistory[_clickHistory.length - 1],'back');
+        return false;
+      }
+    }
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Course categories",
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+          elevation: 0,
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black),
-        elevation: 0,
-      ),
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-          child: _isLoading
-              ? Center(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text("Loading...")
-                    ],
-                  ),
-                )
-              : Stack(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: double.infinity,
-                      child: RefreshIndicator(
-                        onRefresh: onRefresh,
-                          child: ListView.builder(
-                            itemCount: _courseCategory.length,
-                            itemBuilder: (context, index) {
-                              return _courseCategory[index].name != ""
-                                  ? GestureDetector(
-                                  onTap: () {
-                                    _getCourseCategoryByParent(
-                                        _courseCategory[index].id!,
-                                        _courseCategory[index].name!);
-                                  },
-                                  child: Container(
-                                      height: 45,
-                                      width: MediaQuery.of(context).size.width,
-                                      margin: const EdgeInsets.only(bottom: 5),
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 5, 10, 5),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFFEFEFEF),
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                            _courseCategory[index].name!,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Color(0xFF001E6C),
-                                                fontWeight: FontWeight.w400),
-                                            overflow: TextOverflow.ellipsis),
-                                      )))
-                                  : Container(
-                                height: 45,
-                                width: double.infinity,
-                              );
-                            },
-                          )
-                      ),
+        body: SafeArea(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+            child: _isLoading
+                ? Center(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("Loading...")
+                      ],
                     ),
-                    _clickHistory.length > 1
-                        ? Align(
-                            alignment: Alignment.bottomCenter,
-                            child: GestureDetector(
-                              onTap: () {
-                                _clickHistory.removeLast();
-                                _getCourseCategoryByParent(
-                                    _clickHistory[_clickHistory.length - 1],
-                                    'back');
-                              },
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                height: 45,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    color: Color(0xFF001E6C),
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.grey[400]!,
-                                          offset: Offset(0, 1),
-                                          blurRadius: 6,
-                                          spreadRadius: 5)
-                                    ]),
-                                child: Center(
-                                    child: Text(
-                                  "Back",
-                                  style: TextStyle(color: Colors.white),
-                                )),
+                  )
+                : Container(
+              height: MediaQuery.of(context).size.height,
+              width: double.infinity,
+              child: RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: ListView.builder(
+                    itemCount: _courseCategory.length,
+                    itemBuilder: (context, index) {
+                      return _courseCategory[index].name != ""
+                          ? GestureDetector(
+                          onTap: () {
+                            _getCourseCategoryByParent(
+                                _courseCategory[index].id!,
+                                _courseCategory[index].name!);
+                          },
+                          child: Container(
+                              height: 45,
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.only(bottom: 5),
+                              padding: const EdgeInsets.fromLTRB(
+                                  10, 5, 10, 5),
+                              decoration: BoxDecoration(
+                                color: Color(0xFFEFEFEF),
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    _courseCategory[index].name!,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xFF001E6C),
+                                        fontWeight: FontWeight.w400),
+                                    overflow: TextOverflow.ellipsis),
+                              )))
+                          : Container(
+                        height: 45,
+                        width: double.infinity,
+                      );
+                    },
+                  )
+              ),
+            ),
+          ),
         ),
       ),
     );

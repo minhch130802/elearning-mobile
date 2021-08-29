@@ -3,6 +3,10 @@ import 'course_contact.dart';
 class Course {
 
   int? id;
+  String? courseCode; //Custom field (this is not a key in json response)
+  String? courseName; //Custom field (this is not a key in json response)
+  String? courseClass; //Custom field (this is not a key in json response)
+  List<String>? teacherName; //Custom field (this is not a key in json response)
   String? fullName;
   String? displayName;
   String? shortName;
@@ -57,9 +61,15 @@ class Course {
     this.format = json['format'];
     this.showGrades = json['showgrades'];
     this.newsItems = json['newsitems'];
-    this.startDate = DateTime.fromMillisecondsSinceEpoch(json['startdate'] * 1000);
-    this.endDate = DateTime.fromMillisecondsSinceEpoch(json['enddate'] * 1000);
+    this.startDate = json['startdate'] != null ? DateTime.fromMillisecondsSinceEpoch(json['startdate'] * 1000) : null;
+    this.endDate = json['enddate'] != null ? DateTime.fromMillisecondsSinceEpoch(json['enddate'] * 1000) : null;
     this.visible = json['visible'];
+
+    //Set value for custom field
+    this.courseCode = splitCourseFullName(json['fullname'])[0];
+    this.courseName = splitCourseFullName(json['fullname'])[1];
+    this.courseClass = splitCourseFullName(json['fullname'])[2];
+    this.teacherName = teacherList(this.contacts!);
   }
 
   List<CourseContact> parseContactList(data) {
@@ -71,5 +81,28 @@ class Course {
     }
     
     return value;
+  }
+
+  List<String> splitCourseFullName(String fullName) {
+    var temp = fullName.split('_');
+    List<String> namePart = [];
+
+    if (temp.length == 4) {
+      namePart.addAll(temp);
+    } else {
+      namePart.addAll([fullName, 'Update soon', 'Update soon', 'Update soon']);
+    }
+
+    return namePart;
+  }
+
+  List<String> teacherList(List<CourseContact> data) {
+    List<String> resultData = [];
+
+    for(int i = 0; i < data.length; i++) {
+      resultData.add(data[i].fullname!);
+    }
+
+    return resultData;
   }
 }

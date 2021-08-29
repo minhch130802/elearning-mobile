@@ -1,1 +1,1 @@
-export 'course.dart';
+export 'core/course.dart';

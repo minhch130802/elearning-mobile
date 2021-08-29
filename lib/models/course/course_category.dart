@@ -42,7 +42,7 @@ class CourseCategory {
     this.courseCount = json['coursecount'];
     this.visible = json['visible'];
     this.visibleOld = json['visibleold'];
-    this.timeModified = DateTime.fromMillisecondsSinceEpoch(json['timemodified'] * 1000);
+    this.timeModified = json['timemodified'] != null ? DateTime.fromMillisecondsSinceEpoch(json['timemodified'] * 1000) : null;
     this.depth = json['depth'];
     this.path = json['path'];
     this.theme = json['theme'];

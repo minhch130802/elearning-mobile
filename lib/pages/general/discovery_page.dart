@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:elearning_project/pages/course/course_category_page.dart';
 import 'package:flutter/material.dart';
-import 'package:elearning_project/api/course.dart';
+import 'package:elearning_project/api/core/course.dart';
 import 'package:elearning_project/models/course/course_category.dart';
 
 class DiscoveryPage extends StatefulWidget {
@@ -12,7 +10,7 @@ class DiscoveryPage extends StatefulWidget {
 
 class _DiscoveryPageState extends State<DiscoveryPage>
     with AutomaticKeepAliveClientMixin<DiscoveryPage> {
-  CourseAPI _courseCategoryAPI = new CourseAPI();
+  CourseRestAPI _courseCategoryAPI = new CourseRestAPI();
   List<CourseCategory> _courseCategoryList = [];
   Map<int, String> _imageList = {
     698: 'simple_logo.png',
@@ -43,7 +41,7 @@ class _DiscoveryPageState extends State<DiscoveryPage>
   };
   bool _isLoading = true;
 
-  @override
+  @mustCallSuper
   void initState() {
     _getCourseCategories();
     super.initState();
@@ -53,7 +51,7 @@ class _DiscoveryPageState extends State<DiscoveryPage>
     _courseCategoryAPI.getCourseCategory().then((value) {
       if (value != []) {
         for (int i = 0; i < value.length; i++) {
-          if (value[i].parent == 0 && value[i].visible == 1) {
+          if (value[i].parent == 0) {
             _courseCategoryList.add(value[i]);
           }
         }
@@ -68,10 +66,9 @@ class _DiscoveryPageState extends State<DiscoveryPage>
     });
   }
 
-  @override
+  @mustCallSuper
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final double itemHeight = size.height / 2;
     final double itemWidth = size.width / 2;
     return !_isLoading
         ? RefreshIndicator(
@@ -153,7 +150,7 @@ class _DiscoveryPageState extends State<DiscoveryPage>
     _getCourseCategories();
   }
 
-  @override
+  @mustCallSuper
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

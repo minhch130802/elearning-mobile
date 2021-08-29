@@ -1,49 +1,52 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:elearning_project/models/course/course.dart';
 import 'package:elearning_project/models/course/course_category.dart';
 import 'package:elearning_project/models/course/course_content.dart';
 import 'package:elearning_project/models/user/user.dart';
-import 'util.dart';
+import '../util/util.dart';
 import 'package:dio/dio.dart';
 
-class CourseAPI {
+class CourseRestAPI extends CourseUtil{
 
-  //Define varibles
-  APIUtil _apiUtil = new APIUtil();
   Dio dio = new Dio();
 
 
   //This will get the course content with the course id
+  //If user with student role and not enrol to that course
+  //this func will return en exception.
   Future<List<CourseContent>> getCourseContent(int courseId) async {
 
-    FormData formData = new FormData.fromMap(_apiUtil.getCourseContentBody(courseId));
+    FormData formData = new FormData.fromMap(super.getCourseContentBody(courseId));
 
     final response = await dio.post(
-        _apiUtil.baseURL,
+        super.baseURL,
         data: formData
     );
 
     if(response.statusCode == 200){
       List<CourseContent> courseContentList = [];
-      final responseLength = response.data.length;
+      if(response.data['exception'] == null)  {
+        final responseLength = response.data.length;
 
-      for(int i = 0; i < responseLength; i++){
-        CourseContent content = new CourseContent.fromJSON(response.data[i]);
-        courseContentList.add(content);
+        for(int i = 0; i < responseLength; i++){
+          CourseContent content = new CourseContent.fromJSON(response.data[i]);
+          courseContentList.add(content);
+        }
+
+        return courseContentList;
+      } else {
+        throw(response.data['errorcode']);
       }
 
-      return courseContentList;
     }
 
     return [];
   }
 
   Future<List<CourseCategory>> getCourseCategory() async {
-    FormData formData = new FormData.fromMap(_apiUtil.getCategoryBody());
+    FormData formData = new FormData.fromMap(super.getCategoryBody());
 
     final response = await dio.post(
-        _apiUtil.baseURL,
+        super.baseURL,
         data: formData
     );
 
@@ -62,10 +65,10 @@ class CourseAPI {
   }
 
   Future<List<Course>> getCourseByCategory(int id) async {
-    FormData formData = new FormData.fromMap(_apiUtil.getCourseByCategoryBody(id));
+    FormData formData = new FormData.fromMap(super.getCourseByCategoryBody(id));
 
     final response = await dio.post(
-        _apiUtil.baseURL,
+        super.baseURL,
       data: formData
     );
 
@@ -88,10 +91,10 @@ class CourseAPI {
   }
 
   Future<List<User>> getEnrolledParticipants(int id) async {
-    FormData formData = new FormData.fromMap(_apiUtil.getCourseParticipantsBody(id));
+    FormData formData = new FormData.fromMap(super.getCourseParticipantsBody(id));
 
     final response = await dio.post(
-        _apiUtil.baseURL,
+        super.baseURL,
         data: formData
     );
 

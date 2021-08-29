@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:elearning_project/api/util.dart';
+import 'package:elearning_project/api/util/util.dart';
 import 'package:elearning_project/models/course/course_module_content.dart';
 import 'package:elearning_project/themes/master.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -43,7 +41,7 @@ class _CourseFilePageState extends State<CourseFilePage> {
         _isDownloading = true;
       });
       taskId = await FlutterDownloader.enqueue(
-        url: link + '&token=${APIUtil().userToken}',
+        url: link + '&token=${GlobalUtil().userToken}',
         savedDir: '/storage/emulated/0/Download/',
         showNotification: true, // show download progress in status bar (for Android)
         openFileFromNotification: true, // click on notification to open downloaded file (for Android)

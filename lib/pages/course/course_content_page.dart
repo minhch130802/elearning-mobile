@@ -1,5 +1,6 @@
 import 'package:elearning_project/api/api.dart';
 import 'package:elearning_project/models/course/course_content.dart';
+import 'package:elearning_project/pages/course/course_enroll_page.dart';
 import 'package:elearning_project/pages/course/course_enrolled_participants_page.dart';
 import 'package:elearning_project/themes/master.dart';
 import 'package:elearning_project/widgets/bottom_sheet_items.dart';
@@ -9,16 +10,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CourseContentPage extends StatefulWidget {
-  CourseContentPage({required this.courseId, required this.courseName});
+  CourseContentPage(
+      {required this.courseId,
+      required this.courseName,
+      required this.teacherName,
+      required this.courseDescription});
   final int courseId;
   final String courseName;
+  final List<String> teacherName;
+  final String courseDescription;
 
   @override
   _CourseContentPageState createState() => _CourseContentPageState();
 }
 
 class _CourseContentPageState extends State<CourseContentPage> {
-  CourseAPI _contentAPI = new CourseAPI();
+  CourseRestAPI _contentAPI = new CourseRestAPI();
   List<CourseContent> _courseContentList = [];
   bool _isLoading = true;
 
@@ -46,6 +53,22 @@ class _CourseContentPageState extends State<CourseContentPage> {
       }
     }).whenComplete(() {
       _isLoading = !_isLoading;
+    }).catchError((error) {
+      if (error == 'errorcoursecontextnotvalid') {
+        Navigator.of(context)
+            .push(MaterialPageRoute(
+                builder: (route) => CourseEnrollPage(
+                      courseId: widget.courseId,
+                      courseName: widget.courseName,
+                      courseDescription: widget.courseDescription,
+                      teacherName: widget.teacherName,
+                    )))
+            .then((value) {
+          if (value == true) {
+            _getCourseContent();
+          }
+        });
+      }
     });
   }
 

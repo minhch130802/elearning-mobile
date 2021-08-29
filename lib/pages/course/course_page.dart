@@ -1,8 +1,6 @@
 import 'package:elearning_project/api/api.dart';
 import 'package:elearning_project/models/course/course.dart';
 import 'package:elearning_project/pages/course/course_content_page.dart';
-import 'package:elearning_project/themes/master.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 
 class CoursePage extends StatefulWidget {
@@ -15,7 +13,7 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> {
-  CourseAPI _courseAPI = new CourseAPI();
+  CourseRestAPI _courseAPI = new CourseRestAPI();
   List<Course> _courseList = [];
   bool _isLoading = true;
 
@@ -29,11 +27,8 @@ class _CoursePageState extends State<CoursePage> {
     _courseAPI.getCourseByCategory(widget.categoryId).then((value) {
       setState(() {
         for (int i = 0; i < value.length; i++) {
-          if (value[i].visible == 1) {
-            _courseList.add(value[i]);
-          }
+          _courseList.add(value[i]);
         }
-        print(_courseList.length);
         _courseList.sort((a, b) => a.sortOrder!.compareTo(b.sortOrder!));
       });
     }).whenComplete(() {
@@ -82,7 +77,10 @@ class _CoursePageState extends State<CoursePage> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => CourseContentPage(
                               courseId: _courseList[index].id!,
-                              courseName: _courseList[index].displayName!)));
+                              courseName: _courseList[index].courseName!,
+                            courseDescription: _courseList[index].summary!,
+                            teacherName: _courseList[index].teacherName!,
+                          )));
                     },
                     child: Container(
                       width: double.infinity,
@@ -98,7 +96,7 @@ class _CoursePageState extends State<CoursePage> {
                             margin: const EdgeInsets.only(bottom: 5),
                             width: MediaQuery.of(context).size.width,
                             child: Text(
-                                "${_courseValidName(_courseList[index].displayName!).toUpperCase()}",
+                                "${_courseList[index].courseCode} | ${_courseList[index].courseName}",
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -112,7 +110,7 @@ class _CoursePageState extends State<CoursePage> {
                                 children: [
                                   Text('Class: '),
                                   Text(
-                                      "${_groupName(_courseList[index].displayName!)}",
+                                      "${_courseList[index].courseClass}",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500
                                       ),
@@ -123,10 +121,11 @@ class _CoursePageState extends State<CoursePage> {
                             margin: const EdgeInsets.only(bottom: 5),
                             child: Text("Teachers: "),
                           ),
-                          for (int i = 0;
-                              i < _courseList[index].contacts!.length;
-                              i++)
-                            Container(
+
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _courseList[index].contacts!.length,
+                            itemBuilder: (context, i) => Container(
                                 margin: const EdgeInsets.only(bottom: 2),
                                 child: Text(
                                   "${_courseList[index].contacts![i].fullname}",
@@ -134,6 +133,7 @@ class _CoursePageState extends State<CoursePage> {
                                       color: Color(0xFF185ADB),
                                       fontWeight: FontWeight.w500),
                                 )),
+                          )
                         ],
                       ),
                     ),
@@ -142,23 +142,5 @@ class _CoursePageState extends State<CoursePage> {
               ),
       ),
     );
-  }
-
-  String _courseValidName(String name) {
-    var temp = name.split('_');
-    if (temp.length == 4) {
-      return temp[0] + ' | ' + temp[1];
-    }
-
-    return name;
-  }
-
-  String _groupName(String name) {
-    var temp = name.split('_');
-    if (temp.length == 4) {
-      return temp[2];
-    }
-
-    return 'Update soon';
   }
 }

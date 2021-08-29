@@ -20,7 +20,7 @@ class _MasterPageState extends State<MasterPage> {
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: false,
         selectedIconTheme: IconThemeData(color: Color(0xFF001E6C)),
-        selectedItemColor: Color(0xFF001E6C),
+        selectedItemColor:  Color(0xFF001E6C),
         unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(

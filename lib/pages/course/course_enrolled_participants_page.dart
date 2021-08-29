@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:elearning_project/api/api.dart';
-import 'package:elearning_project/api/util.dart';
-import 'package:elearning_project/models/user/user.dart';
-import 'package:elearning_project/themes/master.dart';
+import '/api/api.dart';
+import '/models/user/user.dart';
+import '/themes/master.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +15,7 @@ class CourseEnrolledParticipantsPage extends StatefulWidget {
 
 class _CourseEnrolledParticipantsPageState
     extends State<CourseEnrolledParticipantsPage> {
-  CourseAPI _courseAPI = new CourseAPI();
+  CourseRestAPI _courseAPI = new CourseRestAPI();
   List<User> _userList = [];
   bool _isLoading = true;
 
