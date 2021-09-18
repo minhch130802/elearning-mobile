@@ -1,6 +1,6 @@
 class CourseCategory {
   CourseCategory({
-    this.id,
+    required this.id,
     this.name,
     this.idNumber,
     this.description,
@@ -16,10 +16,11 @@ class CourseCategory {
     this.theme
   });
 
-  int? id;
+  late int id;
   String? name;
   String? idNumber;
   String? description;
+  bool isCourse = false;
   int? descriptionFormat;
   int? parent;
   int? sortOrder;

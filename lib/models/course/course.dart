@@ -7,6 +7,7 @@ class Course {
   String? courseName; //Custom field (this is not a key in json response)
   String? courseClass; //Custom field (this is not a key in json response)
   List<String>? teacherName; //Custom field (this is not a key in json response)
+  bool isCourse = true;
   String? fullName;
   String? displayName;
   String? shortName;
@@ -21,10 +22,11 @@ class Course {
   List<dynamic>? enrollmentMethods;
   String? idNumber;
   String? format;
-  int? showGrades;
+  dynamic showGrades;
   int? newsItems;
   DateTime? startDate;
   DateTime? endDate;
+  DateTime? lastAccess;
   int? maxBytes;
   int? showReports;
   int? visible;
@@ -55,7 +57,7 @@ class Course {
     this.summaryFormat = json['summaryformat'];
     this.summaryFiles = json['summaryfiles'];
     this.overviewFiles = json['overviewfiles'];
-    this.contacts = parseContactList(json['contacts']);
+    this.contacts = json['contacts'] != null ? parseContactList(json['contacts']) : null;
     this.enrollmentMethods = json['enrollmentmethods'];
     this.idNumber = json['idnumber'];
     this.format = json['format'];
@@ -63,13 +65,14 @@ class Course {
     this.newsItems = json['newsitems'];
     this.startDate = json['startdate'] != null ? DateTime.fromMillisecondsSinceEpoch(json['startdate'] * 1000) : null;
     this.endDate = json['enddate'] != null ? DateTime.fromMillisecondsSinceEpoch(json['enddate'] * 1000) : null;
+    this.lastAccess = json['lastaccess'] != null ? DateTime.fromMillisecondsSinceEpoch(json['lastaccess'] * 1000) : null;
     this.visible = json['visible'];
 
     //Set value for custom field
     this.courseCode = splitCourseFullName(json['fullname'])[0];
     this.courseName = splitCourseFullName(json['fullname'])[1];
     this.courseClass = splitCourseFullName(json['fullname'])[2];
-    this.teacherName = teacherList(this.contacts!);
+    this.teacherName = this.contacts != null ? teacherList(this.contacts!) : [];
   }
 
   List<CourseContact> parseContactList(data) {

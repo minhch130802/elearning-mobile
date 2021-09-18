@@ -2,6 +2,7 @@ import 'package:elearning_project/models/user/enrolled_course.dart';
 import 'package:elearning_project/models/user/role.dart';
 
 class User {
+  User({this.id});
 
   int? id;
   String? username;
@@ -33,9 +34,9 @@ class User {
     this.email = json['email'];
     this.department = json['department'];
     this.idNumber = json['idnumber'];
-    this.firstAccess = DateTime.fromMillisecondsSinceEpoch(json['firstaccess'] * 1000);
-    this.lastAccess = DateTime.fromMillisecondsSinceEpoch(json['lastaccess'] * 1000);
-    this.lastCourseAccess = DateTime.fromMillisecondsSinceEpoch(json['lastcourseaccess'] * 1000);
+    this.firstAccess = json['firstaccess'] != null ? DateTime.fromMillisecondsSinceEpoch(json['firstaccess'] * 1000) : null;
+    this.lastAccess = json['lastaccess'] != null ? DateTime.fromMillisecondsSinceEpoch(json['lastaccess'] * 1000) : null;
+    this.lastCourseAccess = json['lastcourseaccess'] != null ? DateTime.fromMillisecondsSinceEpoch(json['lastcourseaccess'] * 1000) : null;
     this.description = json['description'];
     this.descriptionFormat = json['descriptionformat'];
     this.city = json['city'];
@@ -43,8 +44,8 @@ class User {
     this.profileImageUrlSmall = json['profileimageurlsmall'];
     this.profileImageUrl = json['profileimageurl'];
     this.groups = json['groups'];
-    this.roles = parseRoleList(json['roles']);
-    this.enrolledCourses = parseEnrolledCourseList(json['enrolledcourses']);
+    this.roles = json['roles'] != null ? parseRoleList(json['roles']) : [];
+    this.enrolledCourses = json['enrolledcourses'] != null ? parseEnrolledCourseList(json['enrolledcourses']) : [];
 
   }
 
