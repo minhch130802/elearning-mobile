@@ -1,8 +1,7 @@
-import 'package:elearning_project/interfaces/pages/general/authencation_page.dart';
-import 'package:elearning_project/interfaces/pages/general/splash_page.dart';
-
-import '/interfaces/pages/master_page.dart';
+import 'package:elearning_project/screens/app/splash_page.dart';
+import 'package:elearning_project/utilities/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -12,6 +11,9 @@ main() async {
   await FlutterDownloader.initialize(
       debug: true // optional: set false to disable printing logs to console
   );
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
+  ));
   FlutterDownloader.registerCallback(TestClass.callback);
   runApp(MyApp());
 }
@@ -35,10 +37,11 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: [
         Locale('en', ''), // English, no country code
-        Locale('es', ''), // Spanish, no country code
+        Locale('vi', ''), // Spanish, no country code
       ],
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.light,
+        primaryColor: AppColors.primaryColor,
       ),
       home: SplashPage(),
     );

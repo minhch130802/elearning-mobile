@@ -23,7 +23,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter: ^2.0.10
   flutter_html: ^2.1.1
   http: ^0.13.3
   flutter_widget_from_html: ^0.6.1
@@ -33,7 +32,7 @@ dependencies:
   flutter_downloader: ^1.6.1 #Ch cau hinh iOS
   permission_handler: ^8.1.4+2
   dio: ^4.0.0
-  flutter_bloc: ^7.2.0
+  flutter_bloc: ^7.3.0
   equatable: ^2.0.3
   date_utils: ^0.2.0
   table_calendar: ^3.0.2
@@ -42,6 +41,10 @@ dependencies:
   url_launcher: ^6.0.10
   fluttertoast: ^8.0.8
   flutter_secure_storage: ^4.2.1
+  connectivity: ^3.0.6
+  jiffy: ^4.1.0
+  webview_flutter: ^2.1.0
+  community_material_icon: ^5.9.55
   flutter_localizations:
     sdk: flutter
 

@@ -1,1 +1,0 @@
-export 'core/course.dart';
